@@ -12,9 +12,9 @@ import SizeReg from '../../assets/images/icon_liner_reg.svg';
 import SizeBig from '../../assets/images/icon_liner_big.svg';
 import { SvgUri } from 'react-native-svg';
 
-const API_URL = "http://172.20.10.2:3001/";
+const API_URL = "http://192.168.0.100:3001/";
 
-function Category({ navigation, slug, headerImage }) {
+function Category({ navigation, _id, headerImage }) {
     const [column, setColumn] = React.useState(0);
 
     const slideAnim = React.useRef(new Animated.Value(0)).current;
@@ -43,8 +43,8 @@ function Category({ navigation, slug, headerImage }) {
             <Title {...{ headerImage, navigation }}/>
             <Controls {...{ column, setColumn }}/>
             <Animated.View style={[ categoryStyles.listsContainer, transform ]}>
-                <List {...{ slug, type: 'classic', navigation }}/>
-                <List sizesMarkup={{ reg: true, big: true }} {...{ slug, type: 'special', navigation }}/>
+                <List {...{ _id, type: 'classic', navigation }}/>
+                <List sizesMarkup={{ reg: true, big: true }} {...{ _id, type: 'special', navigation }}/>
             </Animated.View>
         </View>
     );
@@ -105,7 +105,7 @@ function Controls({ column, setColumn }) {
 }
 
 function List({ 
-    slug,
+    _id,
     type,
     sizesMarkup = { small: true, reg: true, big: true }, 
     navigation 
@@ -115,7 +115,8 @@ function List({
     const [status, setStatus] = React.useState('idle');
 
     function fetchItems() {
-        const endpoint = `products?category=${slug}&type=${type}`;
+        console.log(_id);
+        const endpoint = `products?cat=${_id}`;
 
         fetch(API_URL + endpoint)
             .then( data => data.json() )
@@ -129,11 +130,7 @@ function List({
             });
     }
 
-    React.useEffect(() => {
-        fetchItems();
-    }, []);
-
-    const staticEndpoint= {}
+    React.useEffect(() => fetchItems(), []);
 
     return (
         <View style={ listStyles.container }>

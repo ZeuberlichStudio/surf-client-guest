@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-function Item({ name, slug, sizes, sizesMarkup = { small: true, reg: true, big: true }, navigation }) {
+function Item({ name, _id, sizes, sizesMarkup = { small: true, reg: true, big: true }, navigation }) {
 
     return (
-        <TouchableOpacity onPress={ () => navigation.navigate('Item', { slug: slug }) }>
+        <TouchableOpacity onPress={ () => navigation.navigate('ModalItem', { _id }) }>
             <View style={ itemStyles.container }>
                 <Text style={ itemStyles.name }>{ name.toUpperCase() }</Text>
                 { sizesMarkup.small && <Text style={ itemStyles.price }>{ sizes.small && sizes.small.price }</Text> }

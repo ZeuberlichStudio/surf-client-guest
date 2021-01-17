@@ -1,9 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SvgUri } from 'react-native-svg';
-import { back } from 'react-native/Libraries/Animated/src/Easing';
 
-const API_URL = 'http://172.20.10.2:3001/';
+const API_URL = 'http://192.168.0.100:3001/';
 
 function Categories({ navigation }) {
 
@@ -31,14 +30,14 @@ function Categories({ navigation }) {
 
     return (
         <ScrollView style={{ paddingTop: 10 }}>
-            { data.map( ( { slug, images }, i ) => <Category {...{ slug, images, navigation, key: i }}/> ) }
+            { data.map( ( { _id, images }, i ) => <Category {...{ _id, images, navigation, key: i }}/> ) }
         </ScrollView>
     );
 }
 
-const Category = ({ slug, images, navigation }) => (
+const Category = ({ _id, images, navigation }) => (
     <TouchableOpacity 
-        onPress={ () => navigation.navigate('Category', { slug, headerImage: `${API_URL}static/${images.title}` }) }
+        onPress={ () => navigation.navigate('Category', { _id, headerImage: `${API_URL}static/${images.title}` }) }
         style={ categoryStyles.container }
     >
         <View>

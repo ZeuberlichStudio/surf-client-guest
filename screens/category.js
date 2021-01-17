@@ -4,11 +4,11 @@ import ItemsList from '../features/menu/items-list';
 
 function CategoryScreen({ route, navigation }) {
 
-    const { slug, headerImage } = route.params;
+    const { _id, headerImage } = route.params;
 
     return (
         <View style={ styles.screen }>
-            <ItemsList {...{ slug, headerImage, navigation }}/>
+            <ItemsList {...{ _id, headerImage, navigation }}/>
         </View>
     );
 }

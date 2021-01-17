@@ -5,14 +5,14 @@ import Categories from '../features/menu/categories-list';
 
 function CategoriesScreen({ navigation }) {
     return (
-        <View style={ styles.screen }>
-            <Text style={ styles.title }>Меню</Text>
+        <View style={ screenStyles.screen }>
+            <Text style={ screenStyles.title }>Меню</Text>
             <Categories {...{navigation}}/>
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const screenStyles = StyleSheet.create({
     screen: {
         width: '100%',
         height: '100%',
@@ -29,4 +29,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default MenuScreen;
+export default CategoriesScreen;

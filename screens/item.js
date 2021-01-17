@@ -1,24 +1,25 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from 'features/cart/slice';
 import { Text, View , Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { BlurView } from "expo-blur";
 import { SvgUri } from 'react-native-svg';
 
-import IconClose from '../../assets/images/icon_close.svg';
+import Sizes from 'features/item/sizes';
 
-import Sizes from './sizes';
-import Price from './price';
+import IconAddToCart from 'assets/images/icon_add-to-cart.svg';
 
-const API_URL = "http://172.20.10.2:3001/";
+const API_URL = "http://192.168.0.100:3001/";
 
-function Item({ navigation, route }) {
+function Item({ route }) {
 
-    const { slug } = route.params;
+    const { _id } = route.params;
     
     const [data, setData] = React.useState({});
     const [status, setStatus] = React.useState('idle');
 
     function fetchProduct() {
-        const endpoint = `products/slug=${slug}`;
+        const endpoint = `products/${_id}`;
         console.log(API_URL + endpoint);
         fetch(API_URL + endpoint)
             .then( data => data.json() )
@@ -40,9 +41,6 @@ function Item({ navigation, route }) {
 
     return (
         <View style={{ width: 375 }}>
-            <TouchableOpacity onPress={ () => navigation.goBack() } style={ closeStyles.close }>
-                <IconClose width="30"/>
-            </TouchableOpacity>
             { 
                 status === 'succeeded' &&  
                 <>
@@ -61,7 +59,7 @@ const ItemImage = ({ images }) => (
     </View>
 );
 
-function ItemContent({ name, desc, type, sizes }) {
+function ItemContent({ _id, name, desc, type, sizes }) {
 
     const [currentSize, setCurrentSize] = React.useState('small');
 
@@ -69,15 +67,32 @@ function ItemContent({ name, desc, type, sizes }) {
         setCurrentSize(Object.entries(sizes)[0][0]);
     }, [sizes]);
 
+    const dispatch = useDispatch();
+
+    function addToCart() {
+        dispatch(addItem({ 
+            _id, 
+            name, 
+            desc, 
+            sizes, 
+            selectedSize: currentSize 
+        }));
+    }
+
     return (
-        <BlurView intensity={100} tint="default" style={ contentStyles.wrapper }>
+        <BlurView intensity={100} tint="dark" style={ contentStyles.wrapper }>
         <View style={ contentStyles.container }>
             <Text style={ contentStyles.marker }>{ type.toUpperCase() }</Text>
             <Text style={ contentStyles.title }>{ name }</Text>
             <Text style={ contentStyles.description }>{ desc }</Text>
             <View style={ contentStyles.separator }/>
             <Sizes {...{ sizes, currentSize, setCurrentSize }}/>
-            <Price {...{ sizes, currentSize, addons: [] }}/>
+            <View style={contentStyles.buyContainer}>
+                <Price {...{ sizes, currentSize, addons: [] }}/>
+                <TouchableOpacity onPress={addToCart} style={contentStyles.addToCart}>
+                    <IconAddToCart/>
+                </TouchableOpacity>
+            </View>
         </View>
         </BlurView>
     );
@@ -89,12 +104,37 @@ const ItemBackground = ({images}) => (
     </View>
 );
 
-const closeStyles = StyleSheet.create({
-    close: {
-        top: 36,
-        right: 36,
-        position: 'absolute',
-        zIndex: 3
+function Price({ sizes, currentSize, addons }) {
+
+    function calcPrice() {
+        const size = sizes[currentSize];
+        let price = size && size.price;
+        for ( const addon of addons ) price += ( addon.price * qty );
+
+        return price || 'Error';
+    }
+
+    return (
+        <View style={ priceStyles.container }>
+            <Text style={ priceStyles.amount }>{ `+${calcPrice()} руб.` }</Text>
+        </View>
+    );
+}
+
+const priceStyles = StyleSheet.create({
+    container: {
+        width: 136,
+        height: 44,
+        backgroundColor: '#D9000D'
+    },
+    amount: {
+        fontFamily: 'BebasNeuePro-BoldIt',
+        letterSpacing: 2,
+        fontSize: 32,
+        lineHeight: 44,
+        width: 136,
+        textAlign: 'center',
+        color: 'white'
     }
 });
 
@@ -105,7 +145,7 @@ const imageStyles = StyleSheet.create({
         left: 8,
         top: 8,
         position: 'absolute',
-        backgroundColor: 'grey'
+        backgroundColor: 'gray'
     },
     image: {
         width: 256,
@@ -123,7 +163,7 @@ const contentStyles = StyleSheet.create({
     container: {
         width: 258,
         padding: 8,
-        backgroundColor: 'rgba(38, 24, 154, .6)',
+        backgroundColor: 'rgba(38, 24, 154, .5)',
         borderWidth: 2,
         borderColor: 'white'
     },
@@ -161,6 +201,18 @@ const contentStyles = StyleSheet.create({
         marginVertical: 12,
         backgroundColor: 'white'
     },
+    buyContainer: {
+        position: 'absolute',
+        left: 16,
+        bottom: -37,
+        flexDirection: 'row',
+    },
+    addToCart: {
+        marginLeft: 8,
+        paddingVertical: 7,
+        paddingHorizontal: 7,
+        backgroundColor: '#D9000D'
+    }
 });
 
 const bgStyles = StyleSheet.create({
